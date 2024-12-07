@@ -3,8 +3,10 @@ package it.unibo.oop.workers02;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sums a matrix.
+ */
 public class MultiThreadedMatrixSum implements SumMatrix {
-    
     private final int nthread;
 
     /**
@@ -25,7 +27,7 @@ public class MultiThreadedMatrixSum implements SumMatrix {
         /**
          * Build a new worker.
          * 
-         * @param list
+         * @param matrix
          *            the list to sum
          * @param startpos
          *            the initial position for this worker
@@ -34,7 +36,7 @@ public class MultiThreadedMatrixSum implements SumMatrix {
          */
         Worker(final double[][] matrix, final int startpos, final int nelem) {
             super();
-            this.matrix = matrix;
+            this.matrix = matrix.clone();
             this.startpos = startpos;
             this.nelem = nelem;
         }
@@ -60,15 +62,15 @@ public class MultiThreadedMatrixSum implements SumMatrix {
     }
 
     @Override
-    public double sum(double[][] matrix) {
+    public final double sum(final double[][] matrix) {
         final int totalElements = matrix.length * matrix[0].length;
         final int size = totalElements / nthread;
         /*
          * Build a list of workers
          */
         final List<Worker> workers = new ArrayList<>(nthread);
-        for (int start = 0, remainer = totalElements % nthread; (start + remainer) < totalElements; start += size) {
-            workers.add(new Worker(matrix, start, (remainer) > 0 ? size + 1 : size));
+        for (int start = 0, remainer = totalElements % nthread; (start + remainer) < totalElements; start += size) { //NOPMD multi var needed
+            workers.add(new Worker(matrix, start, remainer > 0 ? size + 1 : size));
             if (remainer > 0) {
                 remainer--;
                 start++;
